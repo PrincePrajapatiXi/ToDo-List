@@ -175,9 +175,10 @@ body::before {
     transform: translateX(30px);
     position: relative;
     overflow: hidden;
-    /* Add these for swipe functionality */
-    touch-action: pan-y;
+    /* Updated for swipe functionality */
+    touch-action: manipulation;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 .task-item:hover {
@@ -188,7 +189,7 @@ body::before {
 
 /* Swipe indicator */
 .task-item::before {
-    content: '🗑️ Swipe to delete';
+    content: '🗑️ Swipe left to delete';
     position: absolute;
     right: 20px;
     top: 50%;
@@ -198,6 +199,7 @@ body::before {
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
+    z-index: 10;
 }
 
 .task-item.swiping::before {
@@ -205,8 +207,8 @@ body::before {
 }
 
 .task-item.swiping {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
 }
 
 /* Swipe animation */

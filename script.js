@@ -10,9 +10,11 @@ class TodoApp {
         
         // Touch/swipe variables
         this.startX = 0;
+        this.startY = 0;
         this.currentX = 0;
-        this.swipeThreshold = 100;
+        this.swipeThreshold = 80;
         this.activeElement = null;
+        this.isHorizontalSwipe = false;
         
         this.init();
     }
@@ -69,28 +71,49 @@ class TodoApp {
                 this.renderTodos();
                 this.updateCounter();
             }, 300);
+        } else {
+            // Direct deletion if no element found
+            this.todos = this.todos.filter(t => t.id !== id);
+            this.saveTodos();
+            this.renderTodos();
+            this.updateCounter();
         }
     }
     
     // Touch event handlers
     handleTouchStart(e, id) {
         this.startX = e.touches[0].clientX;
+        this.startY = e.touches[0].clientY;
         this.activeElement = e.currentTarget;
         this.activeElement.style.transition = 'none';
+        this.isHorizontalSwipe = false;
+        
+        console.log('Touch start:', id); // Debug log
     }
     
     handleTouchMove(e, id) {
         if (!this.activeElement) return;
         
         this.currentX = e.touches[0].clientX;
-        const diffX = this.startX - this.currentX;
+        const currentY = e.touches[0].clientY;
         
-        // Only allow left swipe (positive diffX)
-        if (diffX > 0) {
+        const diffX = this.startX - this.currentX;
+        const diffY = Math.abs(this.startY - currentY);
+        
+        // Determine if this is a horizontal swipe
+        if (Math.abs(diffX) > 10 && Math.abs(diffX) > diffY) {
+            this.isHorizontalSwipe = true;
+            e.preventDefault(); // Prevent scrolling
+        }
+        
+        // Only allow left swipe (positive diffX) and horizontal swipes
+        if (this.isHorizontalSwipe && diffX > 0) {
             this.activeElement.style.transform = `translateX(-${diffX}px)`;
             
+            console.log('Swiping:', diffX); // Debug log
+            
             // Add visual feedback when approaching threshold
-            if (diffX > this.swipeThreshold * 0.5) {
+            if (diffX > this.swipeThreshold * 0.6) {
                 this.activeElement.classList.add('swiping');
             } else {
                 this.activeElement.classList.remove('swiping');
@@ -103,21 +126,27 @@ class TodoApp {
         
         const diffX = this.startX - this.currentX;
         
+        console.log('Touch end:', diffX, 'Threshold:', this.swipeThreshold); // Debug log
+        
         // Reset styles
         this.activeElement.style.transition = 'all 0.3s ease';
         this.activeElement.classList.remove('swiping');
         
-        if (diffX > this.swipeThreshold) {
+        if (this.isHorizontalSwipe && diffX > this.swipeThreshold) {
             // Swipe threshold reached - delete item
+            console.log('Deleting task:', id); // Debug log
             this.deleteTodo(id);
         } else {
             // Return to original position
             this.activeElement.style.transform = 'translateX(0)';
         }
         
+        // Reset variables
         this.activeElement = null;
         this.startX = 0;
+        this.startY = 0;
         this.currentX = 0;
+        this.isHorizontalSwipe = false;
     }
     
     renderTodos() {
@@ -138,20 +167,20 @@ class TodoApp {
             
             li.innerHTML = `
                 <div class="task-checkbox ${todo.completed ? 'checked' : ''}" 
-                     onclick="app.toggleTodo(${todo.id})">
+                     onclick="event.stopPropagation(); app.toggleTodo(${todo.id})">
                 </div>
                 <span class="task-text">${this.escapeHtml(todo.text)}</span>
                 <div class="task-actions">
-                    <button class="delete-btn" onclick="app.deleteTodo(${todo.id})">
+                    <button class="delete-btn" onclick="event.stopPropagation(); app.deleteTodo(${todo.id})">
                         ×
                     </button>
                 </div>
             `;
             
             // Add touch event listeners for swipe functionality
-            li.addEventListener('touchstart', (e) => this.handleTouchStart(e, todo.id), { passive: true });
-            li.addEventListener('touchmove', (e) => this.handleTouchMove(e, todo.id), { passive: true });
-            li.addEventListener('touchend', (e) => this.handleTouchEnd(e, todo.id), { passive: true });
+            li.addEventListener('touchstart', (e) => this.handleTouchStart(e, todo.id), { passive: false });
+            li.addEventListener('touchmove', (e) => this.handleTouchMove(e, todo.id), { passive: false });
+            li.addEventListener('touchend', (e) => this.handleTouchEnd(e, todo.id), { passive: false });
             
             this.list.appendChild(li);
         });
