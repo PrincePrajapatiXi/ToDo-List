@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Todo App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1 class="app-title">
+                <span class="title-icon">✨</span>
+                My Tasks
+                <span class="task-counter" id="taskCounter">0</span>
+            </h1>
+        </div>
+        
+        <div class="add-task-section">
+            <form id="todo-form" class="task-form">
+                <div class="input-wrapper">
+                    <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" />
+                    <button type="submit" class="add-btn">
+                        <span class="btn-text">Add Task</span>
+                        <span class="btn-icon">+</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tasks-container">
+            <ul id="todo-list" class="task-list"></ul>
+            <div id="empty-state" class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No tasks yet</h3>
+                <p>Add your first task above to get started!</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
