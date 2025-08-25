@@ -8,6 +8,12 @@ class TodoApp {
         
         this.todos = JSON.parse(localStorage.getItem('todos')) || [];
         
+        // Touch/swipe variables
+        this.startX = 0;
+        this.currentX = 0;
+        this.swipeThreshold = 100;
+        this.activeElement = null;
+        
         this.init();
     }
     
@@ -54,10 +60,64 @@ class TodoApp {
     }
     
     deleteTodo(id) {
-        this.todos = this.todos.filter(t => t.id !== id);
-        this.saveTodos();
-        this.renderTodos();
-        this.updateCounter();
+        const element = document.querySelector(`[data-id="${id}"]`);
+        if (element) {
+            element.classList.add('swipe-delete');
+            setTimeout(() => {
+                this.todos = this.todos.filter(t => t.id !== id);
+                this.saveTodos();
+                this.renderTodos();
+                this.updateCounter();
+            }, 300);
+        }
+    }
+    
+    // Touch event handlers
+    handleTouchStart(e, id) {
+        this.startX = e.touches[0].clientX;
+        this.activeElement = e.currentTarget;
+        this.activeElement.style.transition = 'none';
+    }
+    
+    handleTouchMove(e, id) {
+        if (!this.activeElement) return;
+        
+        this.currentX = e.touches[0].clientX;
+        const diffX = this.startX - this.currentX;
+        
+        // Only allow left swipe (positive diffX)
+        if (diffX > 0) {
+            this.activeElement.style.transform = `translateX(-${diffX}px)`;
+            
+            // Add visual feedback when approaching threshold
+            if (diffX > this.swipeThreshold * 0.5) {
+                this.activeElement.classList.add('swiping');
+            } else {
+                this.activeElement.classList.remove('swiping');
+            }
+        }
+    }
+    
+    handleTouchEnd(e, id) {
+        if (!this.activeElement) return;
+        
+        const diffX = this.startX - this.currentX;
+        
+        // Reset styles
+        this.activeElement.style.transition = 'all 0.3s ease';
+        this.activeElement.classList.remove('swiping');
+        
+        if (diffX > this.swipeThreshold) {
+            // Swipe threshold reached - delete item
+            this.deleteTodo(id);
+        } else {
+            // Return to original position
+            this.activeElement.style.transform = 'translateX(0)';
+        }
+        
+        this.activeElement = null;
+        this.startX = 0;
+        this.currentX = 0;
     }
     
     renderTodos() {
@@ -74,6 +134,7 @@ class TodoApp {
             const li = document.createElement('li');
             li.className = `task-item ${todo.completed ? 'completed' : ''}`;
             li.style.animationDelay = `${index * 0.1}s`;
+            li.setAttribute('data-id', todo.id);
             
             li.innerHTML = `
                 <div class="task-checkbox ${todo.completed ? 'checked' : ''}" 
@@ -86,6 +147,11 @@ class TodoApp {
                     </button>
                 </div>
             `;
+            
+            // Add touch event listeners for swipe functionality
+            li.addEventListener('touchstart', (e) => this.handleTouchStart(e, todo.id), { passive: true });
+            li.addEventListener('touchmove', (e) => this.handleTouchMove(e, todo.id), { passive: true });
+            li.addEventListener('touchend', (e) => this.handleTouchEnd(e, todo.id), { passive: true });
             
             this.list.appendChild(li);
         });
