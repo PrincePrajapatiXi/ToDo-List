@@ -181,6 +181,10 @@ body::before {
     -webkit-user-select: none;
 }
 
+.task-item:active {
+    cursor: grabbing;
+}
+
 .task-item:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
