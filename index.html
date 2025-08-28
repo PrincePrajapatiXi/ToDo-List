@@ -2,40 +2,394 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Todo App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>My Day - Todo List</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a2332">
+    <meta name="description" content="A beautiful and functional todo list app inspired by Microsoft To Do">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
     <div class="app-container">
-        <div class="header">
-            <h1 class="app-title">
-                <span class="title-icon">✨</span>
-                My Tasks
-                <span class="task-counter" id="taskCounter">0</span>
-            </h1>
-        </div>
-        <div class="add-task-section">
-            <form id="todo-form" class="task-form">
-                <div class="input-wrapper">
-                    <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" />
-                    <button type="submit" class="add-btn">
-                        <span class="btn-text">Add Task</span>
-                        <span class="btn-icon">+</span>
-                    </button>
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1 class="mobile-title" id="mobile-page-title">My Day</h1>
+            <button class="mobile-settings" aria-label="Settings">⚙️</button>
+        </header>
+
+        <!-- Left Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">PP</div>
+                    <div class="user-info">
+                        <div class="user-name">Prince Prajapati</div>
+                        <div class="user-email">princeprajapti2589@gmail.com ▼</div>
+                    </div>
                 </div>
-            </form>
-        </div>
-        <div class="tasks-container">
-            <ul id="todo-list" class="task-list"></ul>
-            <div id="empty-state" class="empty-state">
-                <div class="empty-icon">📋</div>
-                <h3>No tasks yet</h3>
-                <p>Add your first task above to get started!</p>
+                <div class="search-box">
+                    <input type="text" placeholder="Search" class="search-input" id="search-input">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item active" data-page="my-day">
+                        <span class="nav-icon">☀️</span>
+                        <span class="nav-text">My Day</span>
+                        <span class="nav-count" id="my-day-count">0</span>
+                    </li>
+                    <li class="nav-item" data-page="important">
+                        <span class="nav-icon">⭐</span>
+                        <span class="nav-text">Important</span>
+                        <span class="nav-count" id="important-count">0</span>
+                    </li>
+                    <li class="nav-item" data-page="planned">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-text">Planned</span>
+                        <span class="nav-count" id="planned-count">0</span>
+                    </li>
+                    <li class="nav-item" data-page="assigned">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-text">Assigned to me</span>
+                        <span class="nav-count" id="assigned-count">0</span>
+                    </li>
+                    <li class="nav-item" data-page="tasks">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">Tasks</span>
+                        <span class="nav-count" id="tasks-count">0</span>
+                    </li>
+                </ul>
+                
+                <!-- Custom Lists Section -->
+                <div class="custom-lists-section">
+                    <ul class="nav-list custom-lists" id="custom-lists">
+                        <!-- Custom lists will be added here dynamically -->
+                    </ul>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="new-list-btn" id="new-list-btn">
+                    <span class="btn-icon">+</span>
+                    <span class="btn-text">New list</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Desktop Header -->
+            <header class="main-header desktop-only">
+                <div class="header-left">
+                    <h1 class="page-title" id="page-title">☀️ My Day</h1>
+                    <p class="page-subtitle" id="current-date">Thursday, August 28</p>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn" id="sort-btn" title="Sort" aria-label="Sort tasks">📊</button>
+                    <button class="header-btn" id="suggestions-btn" title="Suggestions" aria-label="Show suggestions">💡</button>
+                    <button class="header-btn" id="more-btn" title="More options" aria-label="More options">⋯</button>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="content-sections">
+                <!-- My Day Section -->
+                <section id="my-day-section" class="page-section active">
+                    <div class="add-task-container">
+                        <form id="todo-form" class="add-task-form">
+                            <div class="task-input-wrapper">
+                                <button type="button" class="task-checkbox-placeholder"></button>
+                                <input 
+                                    type="text" 
+                                    id="todo-input" 
+                                    class="task-input"
+                                    placeholder="Try typing 'Pay utilities bill by Friday 6pm'"
+                                    maxlength="255"
+                                    autocomplete="off"
+                                >
+                                <button type="submit" class="add-task-btn">
+                                    <span class="add-icon">+</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tasks-section">
+                        <ul id="todo-list" class="task-list" role="list"></ul>
+                        
+                        <div id="empty-state" class="empty-state">
+                            <div class="empty-illustration">
+                                <div class="empty-card">
+                                    <div class="card-icon">📝</div>
+                                    <div class="card-sparkle">✨</div>
+                                    <div class="card-gear">⚙️</div>
+                                </div>
+                                <div class="tower-illustration"></div>
+                            </div>
+                            <h2 class="empty-title">Focus on your day</h2>
+                            <p class="empty-description">Get things done with My Day, a list<br>that refreshes every day.</p>
+                            <button class="empty-action-btn" onclick="app.focusInput()">
+                                Add your first task
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Important Section -->
+                <section id="important-section" class="page-section">
+                    <div class="tasks-section">
+                        <ul id="important-list" class="task-list" role="list"></ul>
+                        
+                        <div class="empty-state">
+                            <div class="empty-illustration">
+                                <div class="empty-card important-card">
+                                    <div class="card-icon">📄</div>
+                                    <div class="star-decorations">
+                                        <span class="star">⭐</span>
+                                        <span class="star">⭐</span>
+                                        <span class="star">⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 class="empty-title">Try starring some tasks to see them here</h2>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Planned Section -->
+                <section id="planned-section" class="page-section">
+                    <div class="tasks-section">
+                        <ul id="planned-list" class="task-list" role="list"></ul>
+                        
+                        <div class="empty-state">
+                            <div class="empty-illustration">
+                                <div class="empty-card planned-card">
+                                    <div class="card-icon">📅</div>
+                                    <div class="calendar-dots">
+                                        <span class="dot blue"></span>
+                                        <span class="dot blue"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 class="empty-title">Tasks with due dates or reminders show up here</h2>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Assigned Section -->
+                <section id="assigned-section" class="page-section">
+                    <div class="tasks-section">
+                        <ul id="assigned-list" class="task-list" role="list"></ul>
+                        
+                        <div class="empty-state">
+                            <div class="empty-illustration">
+                                <div class="empty-card assigned-card">
+                                    <div class="card-icon">📋</div>
+                                    <div class="person-avatar">
+                                        <span class="avatar-icon">👤</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 class="empty-title">Tasks assigned to you show up here</h2>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tasks Section -->
+                <section id="tasks-section" class="page-section">
+                    <div class="add-task-container">
+                        <div class="add-task-simple">
+                            <button class="add-task-simple-btn" onclick="app.showAddTaskDialog()">
+                                <span class="add-icon">+</span>
+                                <span class="add-text">Add a task</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tasks-section">
+                        <div class="task-group">
+                            <h3 class="group-title">📝 My Day</h3>
+                            <ul id="all-my-day-tasks" class="task-list grouped"></ul>
+                        </div>
+                        
+                        <div class="task-group" id="important-group" style="display: none;">
+                            <h3 class="group-title">⭐ Important</h3>
+                            <ul id="all-important-tasks" class="task-list grouped"></ul>
+                        </div>
+                        
+                        <div class="task-group" id="completed-group" style="display: none;">
+                            <h3 class="group-title">✅ Completed</h3>
+                            <ul id="all-completed-tasks" class="task-list grouped"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dynamic Custom List Sections will be added here -->
+                <div id="dynamic-sections"></div>
+            </div>
+
+            <!-- Floating Add Button (Mobile) -->
+            <button id="fab" class="fab mobile-only">
+                <span class="fab-icon">+</span>
+            </button>
+        </main>
+    </div>
+
+    <!-- Task Actions Modal -->
+    <div id="task-modal" class="task-modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Task Options</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button class="modal-action" id="edit-task-btn">
+                    <span class="modal-icon">✏️</span>
+                    <span>Edit task</span>
+                </button>
+                <button class="modal-action" id="toggle-important-btn">
+                    <span class="modal-icon">⭐</span>
+                    <span id="important-text">Mark as important</span>
+                </button>
+                <button class="modal-action" id="add-to-my-day-btn">
+                    <span class="modal-icon">☀️</span>
+                    <span id="my-day-text">Add to My Day</span>
+                </button>
+                <button class="modal-action danger" id="delete-task-btn">
+                    <span class="modal-icon">🗑️</span>
+                    <span>Delete task</span>
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- Add Task Dialog -->
+    <div id="add-task-dialog" class="task-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add a task</h3>
+                <button class="modal-close" onclick="app.hideAddTaskDialog()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-task-form">
+                    <input type="text" id="dialog-task-input" placeholder="Enter task..." class="dialog-input">
+                    <div class="dialog-actions">
+                        <button type="button" class="dialog-btn secondary" onclick="app.hideAddTaskDialog()">Cancel</button>
+                        <button type="submit" class="dialog-btn primary">Add task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom List Settings Modal -->
+    <div id="list-settings-modal" class="task-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content list-settings-content">
+            <div class="modal-header">
+                <h3 id="list-settings-title">List Settings</h3>
+                <button class="modal-close" onclick="app.hideListSettings()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Rename List -->
+                <div class="settings-section">
+                    <button class="modal-action" id="rename-list-btn">
+                        <span class="modal-icon">📝</span>
+                        <span>Rename list</span>
+                    </button>
+                </div>
+
+                <!-- Sort Options -->
+                <div class="settings-section">
+                    <button class="modal-action" id="sort-options-btn">
+                        <span class="modal-icon">🔄</span>
+                        <span>Sort by</span>
+                        <span class="modal-arrow">▶</span>
+                    </button>
+                </div>
+
+                <!-- Theme Selection -->
+                <div class="settings-section">
+                    <h4 class="section-title">Theme</h4>
+                    <div class="theme-grid" id="theme-grid">
+                        <!-- Theme colors will be populated here -->
+                    </div>
+                </div>
+
+                <!-- List Actions -->
+                <div class="settings-section">
+                    <button class="modal-action" id="print-list-btn">
+                        <span class="modal-icon">🖨️</span>
+                        <span>Print list</span>
+                    </button>
+                    <button class="modal-action" id="email-list-btn">
+                        <span class="modal-icon">📧</span>
+                        <span>Email list</span>
+                    </button>
+                    <button class="modal-action" id="pin-to-start-btn">
+                        <span class="modal-icon">📌</span>
+                        <span>Pin to Start</span>
+                    </button>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="settings-section">
+                    <button class="modal-action danger" id="delete-list-btn">
+                        <span class="modal-icon">🗑️</span>
+                        <span>Delete list</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create New List Modal -->
+    <div id="new-list-modal" class="task-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create new list</h3>
+                <button class="modal-close" onclick="app.hideNewListModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="new-list-form">
+                    <div class="form-group">
+                        <label for="list-name-input" class="form-label">List name</label>
+                        <input type="text" id="list-name-input" class="form-input" placeholder="Enter list name" maxlength="50" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Choose theme</label>
+                        <div class="theme-grid" id="new-list-theme-grid">
+                            <!-- Theme options will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="form-btn secondary" onclick="app.hideNewListModal()">Cancel</button>
+                        <button type="submit" class="form-btn primary">Create list</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
