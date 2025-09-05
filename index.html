@@ -3,506 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Day - Todo List</title>
-    <link rel="manifest" href="manifest.json">
+    <title>My Tasks - Todo App</title>
     <link rel="stylesheet" href="styles.css">
-    <meta name="theme-color" content="#1a2332">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <!-- Mobile Header -->
-        <header class="mobile-header mobile-only">
-            <button id="menu-toggle" class="menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <h1 id="mobile-page-title" class="mobile-title">My Day</h1>
-            <button id="mobile-settings" class="mobile-settings">⚙️</button>
-        </header>
-
-        <!-- Menu Overlay -->
-        <div id="menu-overlay" class="menu-overlay"></div>
-
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <div class="user-profile">
-                    <div class="user-avatar">U</div>
-                    <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="user-email">user@example.com</div>
-                    </div>
-                </div>
-                <div class="search-box">
-                    <input type="search" id="search-input" class="search-input" placeholder="Search tasks...">
-                    <span class="search-icon">🔍</span>
-                </div>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <ul class="nav-list">
-                    <li class="nav-item active" data-page="my-day">
-                        <span class="nav-icon">☀️</span>
-                        <span class="nav-text">My Day</span>
-                        <span id="my-day-count" class="nav-count"></span>
-                    </li>
-                    <li class="nav-item" data-page="important">
-                        <span class="nav-icon">⭐</span>
-                        <span class="nav-text">Important</span>
-                        <span id="important-count" class="nav-count"></span>
-                    </li>
-                    <li class="nav-item" data-page="planned">
-                        <span class="nav-icon">📅</span>
-                        <span class="nav-text">Planned</span>
-                        <span id="planned-count" class="nav-count"></span>
-                    </li>
-                    <li class="nav-item" data-page="assigned">
-                        <span class="nav-icon">👤</span>
-                        <span class="nav-text">Assigned to me</span>
-                        <span id="assigned-count" class="nav-count"></span>
-                    </li>
-                    <li class="nav-item" data-page="tasks">
-                        <span class="nav-icon">🏠</span>
-                        <span class="nav-text">Tasks</span>
-                        <span id="tasks-count" class="nav-count"></span>
-                    </li>
-                </ul>
-                <div id="custom-lists" class="custom-lists-section">
-                    <div id="custom-lists-container" class="custom-lists"></div>
-                </div>
-            </nav>
-
-            <div class="sidebar-footer">
-                <button id="new-list-btn" class="new-list-btn">
-                    <span>+</span>
-                    <span>New List</span>
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="app-title">My Tasks</h1>
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i>
                 </button>
             </div>
-        </aside>
+            <div class="search-container" id="searchContainer">
+                <input type="text" id="searchInput" placeholder="Search tasks..." class="search-input">
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="user-name">My Tasks</span>
+                </div>
+                <ul class="nav-list">
+                    <li class="nav-item active" data-list="my-day">
+                        <i class="fas fa-sun"></i>
+                        <span>My Day</span>
+                        <span class="task-count" id="myDayCount">0</span>
+                    </li>
+                    <li class="nav-item" data-list="important">
+                        <i class="fas fa-star"></i>
+                        <span>Important</span>
+                        <span class="task-count" id="importantCount">0</span>
+                    </li>
+                    <li class="nav-item" data-list="planned">
+                        <i class="fas fa-calendar"></i>
+                        <span>Planned</span>
+                        <span class="task-count" id="plannedCount">0</span>
+                    </li>
+                    <li class="nav-item" data-list="all-tasks">
+                        <i class="fas fa-list"></i>
+                        <span>All Tasks</span>
+                        <span class="task-count" id="allTasksCount">0</span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Desktop Header -->
-            <header class="main-header desktop-only">
-                <div class="header-left">
-                    <h1 id="page-title" class="page-title">☀️ My Day</h1>
-                    <p id="current-date" class="page-subtitle"></p>
+            <div class="list-header">
+                <h2 class="list-title" id="listTitle">My Day</h2>
+                <span class="list-date" id="listDate"></span>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+
+            <!-- Task List -->
+            <div class="task-list" id="taskList">
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-check-circle"></i>
+                    <p>No tasks yet. Add one below!</p>
                 </div>
-                <div class="header-actions">
-                    <button id="theme-toggle-btn" class="header-btn" title="Toggle Light/Dark Theme">💡</button>
-                    <button id="minimize-toggle-btn" class="header-btn" title="Minimize/Restore Page">🗗</button>
+            </div>
+
+            <!-- Add Task -->
+            <div class="add-task-container">
+                <div class="add-task-input">
+                    <input type="text" id="taskInput" placeholder="Add a task">
+                    <button class="add-btn" id="addBtn">
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
-            </header>
-
-            <div class="content-sections">
-                <!-- My Day Section -->
-                <section id="my-day-section" class="page-section active">
-                    <div class="add-task-container">
-                        <form id="todo-form">
-                            <div class="task-input-wrapper">
-                                <span class="task-checkbox-placeholder"></span>
-                                <input type="text" id="todo-input" class="task-input" placeholder="Add a task" maxlength="255">
-                                <button type="submit" class="add-task-btn">+</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tasks-section">
-                        <div id="my-day-empty-state" class="empty-state">
-                            <div class="empty-illustration">
-                                <div class="empty-card">
-                                    <div class="card-icon">📝</div>
-                                    <div class="card-sparkle">✨</div>
-                                </div>
-                            </div>
-                            <h2 class="empty-title">Focus on your day</h2>
-                            <p class="empty-description">Get things done with My Day, a list that refreshes every day.</p>
-                            <button class="empty-action-btn" onclick="document.getElementById('todo-input').focus()">Add your first task</button>
-                        </div>
-                        <ul id="todo-list" class="task-list"></ul>
-                    </div>
-                </section>
-
-                <!-- Important Section -->
-                <section id="important-section" class="page-section">
-                    <div class="add-task-container">
-                        <form id="important-form">
-                            <div class="task-input-wrapper">
-                                <span class="task-checkbox-placeholder"></span>
-                                <input type="text" id="important-input" class="task-input" placeholder="Add an important task" maxlength="255">
-                                <button type="submit" class="add-task-btn">+</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tasks-section">
-                        <div id="important-empty-state" class="empty-state">
-                            <div class="empty-illustration">
-                                <div class="empty-card important-card">
-                                    <div class="card-icon">⭐</div>
-                                    <div class="star-decorations">
-                                        <span class="star">⭐</span>
-                                        <span class="star">⭐</span>
-                                        <span class="star">⭐</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <h2 class="empty-title">Try starring some tasks</h2>
-                            <p class="empty-description">Mark important tasks with a star so you can easily find them here.</p>
-                        </div>
-                        <ul id="important-list" class="task-list"></ul>
-                    </div>
-                </section>
-
-                <!-- Planned Section -->
-                <section id="planned-section" class="page-section">
-                    <div class="add-task-container">
-                        <form id="planned-form">
-                            <div class="task-input-wrapper">
-                                <span class="task-checkbox-placeholder"></span>
-                                <input type="text" id="planned-input" class="task-input" placeholder="Add a planned task" maxlength="255">
-                                <button type="submit" class="add-task-btn">+</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tasks-section">
-                        <div id="planned-empty-state" class="empty-state">
-                            <div class="empty-illustration">
-                                <div class="empty-card planned-card">
-                                    <div class="card-icon">📅</div>
-                                    <div class="calendar-dots">
-                                        <div class="dot blue"></div>
-                                        <div class="dot blue"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <h2 class="empty-title">Tasks with due dates show up here</h2>
-                            <p class="empty-description">Add due dates to your tasks to keep track of what's coming up.</p>
-                        </div>
-                        <ul id="planned-list" class="task-list"></ul>
-                    </div>
-                </section>
-
-                <!-- Assigned Section -->
-                <section id="assigned-section" class="page-section">
-                    <div class="add-task-container">
-                        <form id="assigned-form">
-                            <div class="task-input-wrapper">
-                                <span class="task-checkbox-placeholder"></span>
-                                <input type="text" id="assigned-input" class="task-input" placeholder="Add an assigned task" maxlength="255">
-                                <button type="submit" class="add-task-btn">+</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="tasks-section">
-                        <div id="assigned-empty-state" class="empty-state">
-                            <div class="empty-illustration">
-                                <div class="empty-card assigned-card">
-                                    <div class="card-icon">👤</div>
-                                    <div class="person-avatar">
-                                        <div class="avatar-icon">👤</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <h2 class="empty-title">Tasks assigned to you show up here</h2>
-                            <p class="empty-description">When someone assigns you a task, you'll see it in this list.</p>
-                        </div>
-                        <ul id="assigned-list" class="task-list"></ul>
-                    </div>
-                </section>
-
-                <!-- Tasks Section -->
-                <section id="tasks-section" class="page-section">
-                    <div class="tasks-section">
-                        <div id="my-day-group" class="task-group">
-                            <h2 class="group-title">📝 My Day</h2>
-                            <ul id="all-my-day-tasks" class="task-list grouped"></ul>
-                        </div>
-                        <div id="important-group" class="task-group">
-                            <h2 class="group-title">⭐ Important</h2>
-                            <ul id="all-important-tasks" class="task-list grouped"></ul>
-                        </div>
-                        <div id="completed-group" class="task-group">
-                            <h2 class="group-title">✅ Completed</h2>
-                            <ul id="all-completed-tasks" class="task-list grouped"></ul>
-                        </div>
-                    </div>
-                </section>
             </div>
         </main>
 
-        <!-- FAB -->
-        <button id="fab" class="fab mobile-only">+</button>
-
-        <!-- Toast Container -->
-        <div id="toast-container" class="toast-container"></div>
-
         <!-- Task Modal -->
-        <div id="task-modal" class="task-modal">
-            <div class="modal-backdrop"></div>
+        <div class="modal-overlay" id="taskModal">
             <div class="modal-content">
-                <header class="modal-header">
-                    <h3>Task Options</h3>
-                    <button class="modal-close">×</button>
-                </header>
-                <div class="modal-body">
-                    <button id="edit-task-btn" class="modal-action">
-                        <span class="modal-icon">✏️</span>
-                        <span>Edit task</span>
-                    </button>
-                    <button id="toggle-important-btn" class="modal-action">
-                        <span class="modal-icon">⭐</span>
-                        <span>Mark as important</span>
-                    </button>
-                    <button id="add-to-my-day-btn" class="modal-action">
-                        <span class="modal-icon">☀️</span>
-                        <span>Add to My Day</span>
-                    </button>
-                    <button id="delete-task-btn" class="modal-action danger">
-                        <span class="modal-icon">🗑️</span>
-                        <span>Delete task</span>
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add Task</h3>
+                    <button class="close-btn" id="closeModal">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Add Task Dialog -->
-        <div id="add-task-dialog" class="task-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <header class="modal-header">
-                    <h3>Add a task</h3>
-                    <button class="modal-close">×</button>
-                </header>
-                <div class="modal-body">
-                    <form id="add-task-form">
-                        <input type="text" id="dialog-task-input" class="dialog-input" placeholder="Enter task" maxlength="255" required>
-                        <div class="dialog-actions">
-                            <button type="button" class="dialog-btn secondary modal-close">Cancel</button>
-                            <button type="submit" class="dialog-btn primary">Add task</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- New List Modal -->
-        <div id="new-list-modal" class="task-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <header class="modal-header">
-                    <h3>Create new list</h3>
-                    <button class="modal-close">×</button>
-                </header>
-                <div class="modal-body">
-                    <form id="new-list-form">
+                <form class="task-form" id="taskForm">
+                    <input type="hidden" id="editTaskId">
+                    <div class="form-group">
+                        <label for="taskTitleInput">Title *</label>
+                        <input type="text" id="taskTitleInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescInput">Description</label>
+                        <textarea id="taskDescInput" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">List name</label>
-                            <input type="text" id="list-name-input" class="form-input" placeholder="Enter list name" required maxlength="50">
+                            <label for="taskDueDate">Due Date</label>
+                            <input type="date" id="taskDueDate">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Choose theme</label>
-                            <div id="new-list-theme-grid" class="theme-grid">
-                                <div class="theme-option theme-blue selected" data-theme="theme-blue"></div>
-                                <div class="theme-option theme-purple" data-theme="theme-purple"></div>
-                                <div class="theme-option theme-green" data-theme="theme-green"></div>
-                                <div class="theme-option theme-red" data-theme="theme-red"></div>
-                                <div class="theme-option theme-orange" data-theme="theme-orange"></div>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="form-btn secondary modal-close">Cancel</button>
-                            <button type="submit" class="form-btn primary">Create list</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- List Settings Modal -->
-        <div id="list-settings-modal" class="task-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content list-settings-content">
-                <header class="modal-header">
-                    <h3>List Settings</h3>
-                    <button class="modal-close">×</button>
-                </header>
-                <div class="modal-body">
-                    <button id="rename-list-btn" class="modal-action">
-                        <span class="modal-icon">✏️</span>
-                        <span>Rename list</span>
-                    </button>
-                    <button id="sort-list-btn" class="modal-action">
-                        <span class="modal-icon">⇅</span>
-                        <span>Sort by</span>
-                        <span class="modal-arrow">›</span>
-                    </button>
-                    <button id="theme-list-btn" class="modal-action">
-                        <span class="modal-icon">🎨</span>
-                        <span>Theme</span>
-                        <span class="modal-arrow">›</span>
-                    </button>
-                    <button id="print-list-btn" class="modal-action">
-                        <span class="modal-icon">🖨️</span>
-                        <span>Print list</span>
-                    </button>
-                    <button id="email-list-btn" class="modal-action">
-                        <span class="modal-icon">📧</span>
-                        <span>Email list</span>
-                    </button>
-                    <button id="pin-list-btn" class="modal-action">
-                        <span class="modal-icon">📌</span>
-                        <span>Pin to Start</span>
-                    </button>
-                    <button id="delete-list-btn" class="modal-action danger">
-                        <span class="modal-icon">🗑️</span>
-                        <span>Delete list</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profile Modal -->
-        <div id="profile-modal" class="task-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content profile-modal-content">
-                <header class="modal-header">
-                    <h3>Profile Settings</h3>
-                    <button class="modal-close">×</button>
-                </header>
-                <div class="modal-body">
-                    <div class="profile-section">
-                        <div class="profile-avatar-section">
-                            <div class="profile-avatar-large gradient-1" id="profile-avatar-large">
-                                <span id="profile-initials">U</span>
-                            </div>
-                            <div class="avatar-options">
-                                <button id="change-avatar-btn" class="profile-btn secondary">Change Avatar</button>
-                                <button id="upload-photo-btn" class="profile-btn secondary">Upload Photo</button>
-                            </div>
-                        </div>
-                        
-                        <div class="profile-form">
-                            <div class="form-group">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" id="profile-name" class="form-input" placeholder="Enter your full name">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" id="profile-email" class="form-input" placeholder="Enter your email">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Job Title</label>
-                                <input type="text" id="profile-job" class="form-input" placeholder="Your job title (optional)">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Theme Preference</label>
-                                <select id="profile-theme" class="form-input">
-                                    <option value="auto">Auto (System)</option>
-                                    <option value="dark">Dark Theme</option>
-                                    <option value="light">Light Theme</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Language</label>
-                                <select id="profile-language" class="form-input">
-                                    <option value="en">English</option>
-                                    <option value="es">Español</option>
-                                    <option value="fr">Français</option>
-                                    <option value="de">Deutsch</option>
-                                    <option value="it">Italiano</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="profile-notifications" class="checkbox-input">
-                                    <span class="checkbox-custom"></span>
-                                    Enable notifications
-                                </label>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="profile-sounds" class="checkbox-input">
-                                    <span class="checkbox-custom"></span>
-                                    Enable sounds
-                                </label>
-                            </div>
+                            <label for="taskPriority">Priority</label>
+                            <select id="taskPriority">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
                         </div>
                     </div>
-                    
-                    <div class="profile-stats">
-                        <h4>Your Stats</h4>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-number" id="stat-total-tasks">0</div>
-                                <div class="stat-label">Total Tasks</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" id="stat-completed-tasks">0</div>
-                                <div class="stat-label">Completed</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" id="stat-productivity">0%</div>
-                                <div class="stat-label">Productivity</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" id="stat-streak">0</div>
-                                <div class="stat-label">Day Streak</div>
-                            </div>
-                        </div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="save-btn" id="saveBtn">Save Task</button>
                     </div>
-                    
-                    <div class="profile-actions">
-                        <button id="save-profile-btn" class="profile-btn primary">Save Changes</button>
-                        <button id="reset-profile-btn" class="profile-btn danger">Reset to Default</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Avatar Selection Modal -->
-        <div id="avatar-modal" class="task-modal">
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <header class="modal-header">
-                    <h3>Choose Avatar</h3>
-                    <button class="modal-close">×</button>
-                </header>
-                <div class="modal-body">
-                    <div class="avatar-grid">
-                        <div class="avatar-option" data-avatar="gradient-1">
-                            <div class="avatar-preview gradient-1">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="gradient-2">
-                            <div class="avatar-preview gradient-2">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="gradient-3">
-                            <div class="avatar-preview gradient-3">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="gradient-4">
-                            <div class="avatar-preview gradient-4">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="gradient-5">
-                            <div class="avatar-preview gradient-5">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="gradient-6">
-                            <div class="avatar-preview gradient-6">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="solid-1">
-                            <div class="avatar-preview solid-1">U</div>
-                        </div>
-                        <div class="avatar-option" data-avatar="solid-2">
-                            <div class="avatar-preview solid-2">U</div>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
